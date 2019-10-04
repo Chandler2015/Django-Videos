@@ -108,3 +108,9 @@ def video_search(request):
         # https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=6&q=eggs&key={YOUR_API_KEY}
         return JsonResponse(response.json())
     return JsonResponse({'Error': "Not able to validate form"})
+
+
+class DeleteVideo(generic.DeleteView):
+    model = Video
+    template_name = 'videos/delete_video.html'
+    success_url = reverse_lazy('dashboard')
