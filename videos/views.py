@@ -6,7 +6,7 @@ from .models import Videos, Video
 from django.contrib.auth import authenticate, login
 from .forms import VideoForm, SearchForm
 from django.forms import formset_factory
-from django.http import Http404
+from django.http import Http404, JsonResponse
 import urllib
 from django.forms.utils import ErrorList
 import requests
@@ -96,3 +96,15 @@ def add_video(request, pk):
                 errors = form._errors.setdefault('url', ErrorList())
                 errors.append('Needs to be a YouTube URL')
     return render(request, 'videos/add_video.html', {'form': form, 'search_form': search_form, 'videos': videos})
+
+
+def video_search(request):
+    search_form = SearchForm(request.GET)
+    if search_form.is_valid():
+        encoded_search_term = urllib.parse.quote(
+            search_form.cleaned_data['search_term'])
+        response = requests.get(
+            f'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=6&q={encoded_search_term}&key={YOUTUBE_API_KEY}')
+        # https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=6&q=eggs&key={YOUR_API_KEY}
+        return JsonResponse(response.json())
+    return JsonResponse({'Error': "Not able to validate form"})
