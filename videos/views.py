@@ -20,7 +20,8 @@ def home(request):
 
 
 def dashboard(request):
-    return render(request, 'videos/dashboard.html')
+    videos = Videos.objects.filter(user=request.user)
+    return render(request, 'videos/dashboard.html', {'videos': videos})
 
 
 class SignUp(generic.CreateView):
@@ -46,7 +47,7 @@ class CreateVideos(generic.CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         super(CreateVideos, self).form_valid(form)
-        return redirect('home')
+        return redirect('dashboard')
 
 
 class DetailVideos(generic.DetailView):
