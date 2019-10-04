@@ -3,7 +3,7 @@
 <div class = "container">
     <div class = "text-center">
         <h1>{{user.username}}'s videos</h1>
-        <a href= "{%url 'create_videos'%}" class ="btn btn-primary">Create new videos</a>
+        <a href="{%url 'create_videos'%}" class ="btn btn-primary">Create new videos</a>
     </div>
    
         {%for thevideo in videos%}

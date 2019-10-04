@@ -18,7 +18,7 @@ YOUTUBE_API_KEY = 'AIzaSyCcVtIzaEIRwklrtyAmwDWKvEgNAFXOQXc'
 def home(request):
     recent_videos = Videos.objects.all().order_by("-id")[:3]
     popular_videos = [Videos.objects.get(
-        pk=2), Videos.objects.get(pk=3), Videos.objects.get(pk=4)]
+        pk=1), Videos.objects.get(pk=2), Videos.objects.get(pk=3)]
     return render(request, 'videos/home.html', {'recent_videos': recent_videos, "popular_videos": popular_videos})
 
 
@@ -29,7 +29,7 @@ def dashboard(request):
 
 class SignUp(generic.CreateView):
     form_class = UserCreationForm
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('dashboard')
     template_name = 'registration/signup.html'
 
     def form_valid(self, form):
