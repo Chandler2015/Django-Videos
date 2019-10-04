@@ -1,11 +1,16 @@
 {% extends "videos/base.html" %}
 {% block content %}
 <div class = "container">
-    <h2>Create Videos</h2>
+    <h2>Add Video</h2>
     <form method="post">
         {%csrf_token%}
         {{form.as_p}}
         <button class = "btn btn-primary" type='submit'>Create </button>
+    </form>
+
+    <h2>Or</h2>
+    <form>
+        {{search_form}}
     </form>
 </div>
 {% endblock %}

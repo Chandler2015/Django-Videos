@@ -1,0 +1,9 @@
+{% extends "videos/base.html" %}
+{% block content %}
+<div class = "container">
+    <h1>{{videos.title}}</h1>
+    <h4 class = "text-muted">{{videos.user.username}}</h4>
+    <a href= "{%url 'update_videos' videos.id%}" class = "btn btn-primary">Update</a>
+    <a href= "{%url 'delete_videos' videos.id%}" class = "btn btn-danger">Delete</a>
+</div>
+{% endblock %}

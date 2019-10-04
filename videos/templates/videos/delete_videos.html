@@ -1,0 +1,13 @@
+{% extends "videos/base.html" %}
+{% block content %}
+<div class = "container">
+    <h2>Are you sure you want to delete this videos?</h2>
+    <form method="post">
+        {%csrf_token%}
+        {{form.as_p}}
+        <button class = "btn btn-danger" type='submit'>Save</button>
+    </form>
+    <br/>
+    <h2><a href="{%url 'detail_videos' videos.id%}">{{videos.title}}</a></h2>
+</div>
+{% endblock %}
