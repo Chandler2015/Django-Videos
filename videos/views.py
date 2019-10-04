@@ -5,6 +5,14 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Videos, Video
 from django.contrib.auth import authenticate, login
 from .forms import VideoForm, SearchForm
+from django.forms import formset_factory
+from django.http import Http404
+import urllib
+from django.forms.utils import ErrorList
+import requests
+
+
+YOUTUBE_API_KEY = 'AIzaSyCcVtIzaEIRwklrtyAmwDWKvEgNAFXOQXc'
 
 
 def home(request):
@@ -62,13 +70,29 @@ class DeleteVideos(generic.DeleteView):
 def add_video(request, pk):
     form = VideoForm()
     search_form = SearchForm()
+    videos = Videos.objects.get(pk=pk)
+    if videos.user != request.user:
+        raise Http404
     if request.method == 'POST':
-        filled_form = VideoForm(request.POST)
-        if filled_form.is_valid():
+
+        form = VideoForm(request.POST)
+        if form.is_valid():
             video = Video()
-            video.url = filled_form.cleaned_data['url']
-            video.title = filled_form.cleaned_data['title']
-            video.youtube_id = filled_form.cleaned_data['youtube_id']
-            video.videos = Videos.objects.get(pk=pk)
-            video.save()
-    return render(request, 'videos/add_video.html', {"form": form, 'search_form': search_form})
+            video.videos = videos
+            video.url = form.cleaned_data['url']
+            parsed_url = urllib.parse.urlparse(video.url)
+            video_id = urllib.parse.parse_qs(parsed_url.query).get('v')
+            if video_id:
+                video.youtube_id = video_id[0]
+                response = requests.get(
+                    f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={video_id[0]}&key={YOUTUBE_API_KEY}')
+
+                json = response.json()
+                title = json['items'][0]['snippet']['title']
+                video.title = title
+                video.save()
+                return redirect('detail_videos', pk)
+            else:
+                errors = form._errors.setdefault('url', ErrorList())
+                errors.append('Needs to be a YouTube URL')
+    return render(request, 'videos/add_video.html', {'form': form, 'search_form': search_form, 'videos': videos})
